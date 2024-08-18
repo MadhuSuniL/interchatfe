@@ -11,7 +11,7 @@ const AppLayout = () => {
       <div className='flex-0 bg-white shadow rounded-md'>
         <Header />
       </div>
-      <div className='flex-1 overflow-auto p-1 pb-20'>
+      <div className='flex-1 overflow-auto'>
         <Outlet />
       </div>
       <div className='flex-0 md:hidden'>

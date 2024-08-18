@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import Home from "./Pages/Authenticated/Home";
 import Requests from "./Pages/Authenticated/Requests";
-import Chats from "./Pages/Authenticated/Chats";
+import Messages from "./Pages/Authenticated/Messages";
 import AppLayout from "./AppLayout";
 import Profile from "./Pages/Authenticated/Profile";
 import Login from "./Pages/UnAuthenticated/Login";
@@ -24,7 +24,7 @@ const router = createBrowserRouter([
           },
           {
               path: 'chats',
-              Component: AuthWrapper(Chats),
+              Component: AuthWrapper(Messages),
           },
           {
               path: 'requests',

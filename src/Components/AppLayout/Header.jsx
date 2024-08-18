@@ -25,7 +25,7 @@ const Header = () => {
     },
     {
       path: '/profile',
-      icon: <img src={profile_logo} className={location.pathname.includes('/profile') ? 'text-pink-600 w-10' : 'text-gray-400 w-5 h-5 object-cover rounded-full'}/>,
+      icon: <img src={profile_logo} className={location.pathname.includes('/profile') ? 'text-gray-400 w-5 h-5 object-cover rounded-full border-pink-600 border-2' : 'text-gray-400 w-5 h-5 object-cover rounded-full'}/>,
       title: '@'+name,
     },
   ];
@@ -62,14 +62,14 @@ const Header = () => {
       </div>
       <div className='flex items-center md:hidden'>
         <Notifications mobile = {true}/>
-        <button className={`mx-2 flex items-center md:hidden ${unActiveStyle} ${location.pathname.includes('/profile') ? activeStyle : ''} `}>
+        {/* <button className={`mx-2 flex items-center md:hidden ${unActiveStyle} ${location.pathname.includes('/profile') ? activeStyle : ''} `}>
           <center>
             <NavLink to={'/profile'}>
               <img src={profile_logo} alt='User Logo' className={`h-9 cp ml-3 mt-5 rounded-full`} />
               <span className="ml-1">{''}</span>
             </NavLink>
           </center>
-        </button>
+        </button> */}
       </div>
 
     </div>

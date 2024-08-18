@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { getData } from '../Functions/LocalStorage';
-import { useSelector } from 'react-redux';
 
 
 
-const withMessageWsConnection = (WrappedComponent) => {
+const withMessageWsConnection = (WrappedComponent, currentChat) => {
   
   return () => {
-    const currentChat = useSelector(state => state.store.currentChat);
     const [socket, setSocket] = useState(null);
     const [isConnected, setIsConnected] = useState(false);
     const [accessToken] = useState(getData('accessToken'));

@@ -32,7 +32,7 @@ const Requests = () => {
   );
 
   return (
-    <div>
+    <div className='pb-20'>
       {/* <Header /> */}
       {
           isLoading ? (

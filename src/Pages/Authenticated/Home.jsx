@@ -41,7 +41,7 @@ const Home = () => {
   }, [searchText])
 
   return (
-    <div>
+    <div className='pb-20'>
       {/* <Header /> */}
       <HeroBanner
         setSearchText={handleSearchTextChange}

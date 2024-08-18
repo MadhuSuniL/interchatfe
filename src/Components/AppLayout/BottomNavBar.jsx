@@ -23,7 +23,7 @@ const BottomNavBar = () => {
     },
     {
       path: '/profile',
-      icon: <img src={profile_logo} className={location.pathname.includes('/profile') ? 'text-pink-600 w-10' : 'text-gray-400 w-5 h-5 object-cover rounded-full'}/>,
+      icon: <img src={profile_logo} className={location.pathname.includes('/profile') ? 'text-gray-400 w-5 h-5 object-cover rounded-full border-pink-600 border-2' : 'text-gray-400 w-5 h-5 object-cover rounded-full'}/>,
       title: '@'+name,
     },
   ];
