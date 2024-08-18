@@ -5,3 +5,7 @@
 .bg-main {
   @apply bg-pink-600
 }
+
+.cp{
+  cursor: pointer;
+}

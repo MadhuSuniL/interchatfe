@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Logo from '../../Components/Logo';
 import apiCall from '../../Functions/Axios';
+import { GiGraspingClaws } from "react-icons/gi";
 import { storeData } from '../../Functions/LocalStorage';
 
 const Login = () => {
@@ -71,12 +72,23 @@ const Login = () => {
               />
             </div>
             <div className="flex items-center justify-between">
-              <button
-                type="submit"
-                className="bg-main text-white font-bold py-2 px-4 rounded-lg hover:bg-main-dark focus:outline-none focus:ring"
-              >
-                Login
-              </button>
+              {
+                isLoading ?
+                <button
+                  type="submit"
+                  className="bg-main text-white font-bold py-2 px-4 rounded-lg hover:bg-main-dark focus:outline-none focus:ring flex items-center"
+                >
+                  <GiGraspingClaws className='mr-2 animate-spin'/> Logging in ...
+                </button>
+                :
+                <button
+                  type="submit"
+                  className="bg-main text-white font-bold py-2 px-4 rounded-lg hover:bg-main-dark focus:outline-none focus:ring"
+                >
+                  Login
+                </button>
+
+              }
             </div>
             <span className='text-sm float-right'>Don't have an account <a href='/register' className='text-main font-bold mx-1 underline underline-offset-2'>Create</a> Now</span>
           </form>

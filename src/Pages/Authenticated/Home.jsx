@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '../../Components/Home/Header';
 import HeroBanner from '../../Components/Home/HeroBanner';
 import apiCall from '../../Functions/Axios'; // Adjust the import according to your project structure
@@ -26,33 +26,36 @@ const Home = () => {
 
   // Fetch users from the API
   const fetchUsers = () => {
-    let url = `/users/search/?query=${searchText}`
+    let url = `/users/search?query=${searchText}`
     let body = {}
     let method = 'get'
     let loadingState = setIsLoading
     const onSuccess = (data) => {
-      console.log(data);
+      setFetchedUsers(data)
     }
     apiCall(url, body, method, loadingState, onSuccess)
   };
+
+  useEffect(()=>{
+    fetchUsers()
+  }, [searchText])
 
   return (
     <div>
       {/* <Header /> */}
       <HeroBanner
         setSearchText={handleSearchTextChange}
-        searchText={searchText}
-        onSearch={handleSearch}
+        searchText={searchText}       
       />
       {/* Display fetched users */}
-      {
-        searchText &&
-        <SearchResults resutls={fetchedUsers}/>
-      }
-      <div className='grid md:grid-cols-2 gap-2'>
-        <SimilartBioUsers/>
-        <MightKnowUsers/>
-      </div>
+        <div className='max-w-[600px] mx-auto'>
+        {
+          searchText ?
+            <SearchResults fetchedUsers={fetchedUsers} isLoading = {isLoading}/>
+            :
+            <MightKnowUsers/>
+        }
+        </div>
     </div>
   );
 };

@@ -143,12 +143,22 @@ const Register = () => {
               </div>
             </div>
             <div className="flex items-center justify-between">
-              <button
-                type="submit"
-                className="bg-main text-white font-bold py-2 px-4 rounded-lg hover:bg-main-dark focus:outline-none focus:ring"
-              >
-                Register
-              </button>
+              {
+                isLoading ?
+                <button
+                  type="submit"
+                  className="bg-main text-white font-bold py-2 px-4 rounded-lg hover:bg-main-dark focus:outline-none focus:ring flex items-center"
+                >
+                  <GiGraspingClaws className='mr-2 animate-spin'/> Registering in ...
+                </button>
+                :
+                <button
+                  type="submit"
+                  className="bg-main text-white font-bold py-2 px-4 rounded-lg hover:bg-main-dark focus:outline-none focus:ring"
+                >
+                  Register
+                </button>
+              }
             </div>
           </form>
           <span className='text-sm float-right'>Already have an account <a href='/login' className='text-main font-bold mx-1 underline underline-offset-2'>Login</a> Now</span>
