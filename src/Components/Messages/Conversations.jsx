@@ -40,7 +40,10 @@ const Conversations = ({
               key={chat.uiid} 
               chat={chat} 
               currentChat={currentChat} 
-              onClick={() => setCurrentChat(chat)}
+              onClick={() => setCurrentChat(prev => ({
+                ...chat,
+                status : true
+              }))}
             />
           )
         }
@@ -55,7 +58,7 @@ const ConversationBox = ({ chat, currentChat, onClick }) => {
   return (
     <div 
       onClick={onClick}
-      className={`group flex justify-between items-center my-1 rounded-lg p-1 hover:bg-opacity-40 ${currentChat?.uiid === chat?.uiid ? 'bg-main text-white hover:text-main' : 'text-main hover:bg-pink-200'}`}
+      className={`cp group flex justify-between items-center my-1 rounded-lg p-1 hover:bg-opacity-40 ${currentChat?.uiid === chat?.uiid ? 'bg-main text-white hover:text-main' : 'text-main hover:bg-pink-200'}`}
     >
       <div className="flex items-center p-1">
         <img 
@@ -73,6 +76,7 @@ const ConversationBox = ({ chat, currentChat, onClick }) => {
           </div> */}
         </div>
       </div>
+      
     </div>
   );
 }

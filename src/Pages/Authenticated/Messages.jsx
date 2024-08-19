@@ -3,12 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import Conversations from '../../Components/Messages/Conversations';
 import ChatWindow from '../../Components/Messages/ChatWindow';
 import apiCall from '../../Functions/Axios';
+import { getData } from '../../Functions/LocalStorage';
+import { toast } from 'react-toastify';
 
 const Messages = () => {
   const [chats, setChats] = useState([]);
   const [currentChat, setCurrentChat] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [socket, setSocket] = useState(null);
+  const [isConnected, setIsConnected] = useState(false);
   const navigate = useNavigate();
+  const accessToken = getData('accessToken');
 
   useEffect(() => {
     const fetchChats = () => {
@@ -26,6 +31,56 @@ const Messages = () => {
     fetchChats();
   }, []);
 
+  useEffect(() => {
+    if (currentChat) {
+      const endPoint = `messages/${currentChat.uiid}`;
+      const url = 'ws://localhost:8000/ws/' + endPoint + '?token=' + accessToken;
+
+      // Cleanup existing socket connection if any
+      if (socket) {
+        socket.close();
+      }
+
+      // Establish new WebSocket connection
+      const newSocket = new WebSocket(url);
+
+      newSocket.onopen = () => {
+        setSocket(newSocket);
+        setIsConnected(true);
+        console.log('Connected to message WebSocket');
+      };
+
+      newSocket.onclose = (event) => {
+        setIsConnected(false);
+        setSocket(null);
+        console.log('Message WebSocket connection closed with code:', event.code);
+      };
+
+      newSocket.onerror = (error) => {
+        console.error('WebSocket error:', error);
+        toast.error('WebSocket error: ' + error.message);
+      };
+
+      // Cleanup on unmount or when dependencies change
+      return () => {
+        if (newSocket) {
+          newSocket.close();
+          setSocket(null);
+          setIsConnected(false);
+        }
+      };
+    } else {
+      if (socket) {
+        socket.close();
+        setSocket(null);
+      }
+    }
+  }, [currentChat]);
+
+  const handleExploreFriends = () => {
+    navigate('/');
+  };
+
   const skeletonLoader = (
     <div className="animate-pulse flex flex-col space-y-3">
       {[1, 2, 3].map((_, index) => (
@@ -40,16 +95,12 @@ const Messages = () => {
     </div>
   );
 
-  const handleExploreFriends = () => {
-    navigate('/');
-  };
-
   return (
     <div className="h-full grid grid-rows-1 md:grid-cols-10 md:gap-2 rounded-lg pt-1">
       {
         chats.length && !isLoading ?
         <>
-          <div className={`duration-200 md:inline md:col-span-3 overflow-y-auto rounded-md h-full px-1 bg-white shadow-sm shadow-black`}>
+          <div className={`${currentChat ? 'hidden' : ''} duration-200 md:inline md:col-span-3 overflow-y-auto rounded-md h-full px-1 bg-white shadow-sm shadow-black`}>
             {isLoading ? (
               skeletonLoader
             ) : (
@@ -58,8 +109,8 @@ const Messages = () => {
           </div>
           {
             currentChat ?
-            <div className={`duration-200 hidden md:inline md:col-span-7 h-full bg-white shadow-sm shadow-black rounded-lg`}>
-                <ChatWindow currentChat={currentChat} />
+            <div className={`${currentChat ? '' : 'hidden'} duration-200 md:inline md:col-span-7 h-full bg-white shadow-sm shadow-black rounded-lg`}>
+                <ChatWindow currentChat={currentChat} setCurrentChat={setCurrentChat} socket={socket} isConnected={isConnected} />
             </div>
             :
             <div className="w-full md:col-span-7 flex justify-center items-center rounded-lg">

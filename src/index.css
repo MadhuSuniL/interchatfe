@@ -6,13 +6,6 @@ body{
     background-color: rgb(245, 245, 245) !important;
 }
 
-::-webkit-scrollbar {
-    width: 10px; 
-}
-::-webkit-scrollbar-thumb {
-    @apply bg-violet-600 rounded-lg
-}
-
 .cp{
     cursor: pointer;
 }

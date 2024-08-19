@@ -1,45 +1,62 @@
 import React, { useEffect, useState } from 'react';
 import { getData } from '../Functions/LocalStorage';
 
-
-
-const withMessageWsConnection = (WrappedComponent, currentChat) => {
+const withMessageWsConnection = (WrappedComponent) => {
   
-  return () => {
+  return (props) => {
     const [socket, setSocket] = useState(null);
     const [isConnected, setIsConnected] = useState(false);
     const [accessToken] = useState(getData('accessToken'));
 
-    const endPoint = `messages/${currentChat?.uiid}`
-    const url = process.env.REACT_APP_WS_URL + endPoint + '?token=' + (accessToken)
-    
     useEffect(() => {
-      if (currentChat){
+      const endPoint = `messages/${props.currentChat?.uiid}`;
+      const url = 'ws://localhost:8000/ws/' + endPoint + '?token=' + accessToken;
+
+      if (props.currentChat) {
+        // Cleanup the existing socket connection if any
         if (socket) {
           socket.close();
         }
-        const newSocket = new WebSocket(url)
+
+        // Establish a new WebSocket connection
+        const newSocket = new WebSocket(url);
+
         newSocket.onopen = () => {
-          setSocket(prev => newSocket);
+          setSocket(newSocket);
           setIsConnected(true);
-          // console.log('Connected to message');
+          console.log('Connected to message WebSocket');
         };
+
         newSocket.onclose = function(event) {
-          // console.log('Message Connection closed with code: ' + event.code);
+          setIsConnected(false);
+          setSocket(null);
+          console.log('Message WebSocket connection closed with code:', event.code);
         };
-      
+
+        newSocket.onerror = function(error) {
+          console.error('WebSocket error:', error);
+        };
+
+      } else {
+        // Close the WebSocket if no chat is selected
+        if (socket) {
+          socket.close();
+          setSocket(null);
+        }
       }
+
+      // Cleanup on unmount or when dependencies change
       return () => {
         if (socket) {
           socket.close();
-          setSocket(prev => null)
+          setSocket(null);
+          setIsConnected(false);
         }
       };
-    },[accessToken, currentChat?.uiid])
+    }, [accessToken, props.currentChat, socket]);
 
-    return <WrappedComponent socket={socket} isConnected={isConnected} />;
+    return <WrappedComponent socket={socket} isConnected={isConnected} {...props} />;
   };
 };
 
-// Usage
-export default withMessageWsConnection
+export default withMessageWsConnection;

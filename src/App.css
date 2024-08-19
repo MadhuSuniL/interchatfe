@@ -3,7 +3,15 @@
   @apply text-pink-600
 }
 .bg-main {
-  @apply bg-pink-600
+  @apply bg-pink-600 !important
+}
+
+::-webkit-scrollbar {
+  width: 10px !important; 
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgb(124 58 237 ) !important;
+  border-radius: 20px !important;
 }
 
 .cp{

@@ -66,12 +66,31 @@ const apiCall = (endpoint, body, method, loadingState, onSuccess) => {
       return onSuccess(data);
     })
     .catch(error => {
-      try {
-        loadingState(false);
-        toast.error(`Error: ${error.response.data.detail}`);
-      } catch (error) {
-        toast.error(`Error: ${error.message}`);
-        loadingState(false);
+      loadingState(false);
+      if (error.response) {
+        const { status, data } = error.response;
+        switch (status) {
+          case 400:
+            toast.error(`Bad Request: ${data.detail || 'The request was invalid or cannot be otherwise served.'}`);
+            break;
+          case 401:
+            toast.error(`Unauthorized: ${data.detail || 'Authentication is required and has failed or has not yet been provided.'}`);
+            break;
+          case 403:
+            toast.error(`Forbidden: ${data.detail || 'You do not have permission to access the requested resource.'}`);
+            break;
+          case 404:
+            toast.error(`Not Found: ${data.detail || 'The requested resource could not be found.'}`);
+            break;
+          case 500:
+            toast.error(`Internal Server Error: ${data.detail || 'The server encountered an error and could not complete your request.'}`);
+            break;
+          default:
+            toast.error(`Error: ${data.detail || 'An unexpected error occurred.'}`);
+            break;
+        }
+      } else {
+        toast.error(`Error: ${error.message || 'An unexpected error occurred.'}`);
       }
     });
 };

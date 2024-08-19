@@ -2,13 +2,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { IoArrowBack } from "react-icons/io5";
 import { IoMdSend } from "react-icons/io";
 import { CiMenuKebab } from "react-icons/ci";
-// import withMessageWsConnection from '../../Hocs/withMessageWsConnection';
 import { MdOutlineReplyAll, MdEdit , MdDelete  } from "react-icons/md";
-import { PiPaintBrushHouseholdFill } from "react-icons/pi";
 import { IoCopy } from "react-icons/io5";
 import FakeUserStatus from './FakeUserStatus';
 
-const ChatWindow = ({socket, isConnected, currentChat}) => {
+const ChatWindow = ({socket, isConnected, currentChat, setCurrentChat}) => {
   const [message, setMessage] = useState('')
   const [messages, setMessages] = useState([])
   const messagesEndRef = useRef(null); 
@@ -16,32 +14,13 @@ const ChatWindow = ({socket, isConnected, currentChat}) => {
 
   const categorizeMessage = (data, currentChat) => {
     if (Array.isArray(data)) {
-      return data.map((message) => {
-        const referenceMessage = message.refference_message;
-        const isReferenceMessageExist =
-          referenceMessage && referenceMessage !== "None";
-  
-        message.is_self_message = message.user !== currentChat?.chat_user_email;
-  
-        if (isReferenceMessageExist) {
-          referenceMessage.is_self_message =
-            referenceMessage.user !== currentChat?.chat_user_email;
-        }
-  
+      return data.map((message) => {  
+        message.is_self_message = message.user !== currentChat?.friend.user.id;
         return message;
       });
     } else {
-      const message = data;
-  
-      const referenceMessage = message.refference_message;
-      const isReferenceMessageExist =
-        referenceMessage && referenceMessage !== "None";
-  
-      message.is_self_message = message.user !== currentChat?.chat_user_email;
-      if (isReferenceMessageExist) {
-        referenceMessage.is_self_message =
-          referenceMessage.user !== currentChat?.chat_user_email;
-      }
+      const message = data;  
+      message.is_self_message = message.user !== currentChat?.friend.user.id;
       return message;
     }
   };
@@ -61,7 +40,6 @@ const ChatWindow = ({socket, isConnected, currentChat}) => {
     if (socket && isConnected) {
       socket.onmessage = (event) => {
           let data = JSON.parse(event.data);
-          console.log(data)
           if (Array.isArray(data)){
             setMessages(categorizeMessage(data, currentChat))
           }
@@ -77,11 +55,11 @@ const ChatWindow = ({socket, isConnected, currentChat}) => {
   }, [socket, isConnected]);
 
   useEffect(() => {
-    typingBoxRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [currentChat, messages]);
 
   const handlereSetCurrentChat = () => {
-    
+    setCurrentChat(null)
     if(socket){
       socket.close()
     }
@@ -91,9 +69,9 @@ const ChatWindow = ({socket, isConnected, currentChat}) => {
     <>
         <div className='flex flex-col h-full text-sm'>
           {/* Header */}
-          <div className='flex justify-between items-center p-2 px-5 bg-main rounded-lg'>
+          <div className='flex-0 flex justify-between items-center p-2 px-3 md:px-5 bg-main rounded-lg'>
             <div className='flex items-center'>
-              <IoArrowBack onClick={handlereSetCurrentChat} className='mr-2 md:hidden text-main' size={25}/>
+              <IoArrowBack onClick={handlereSetCurrentChat} className='mr-2 md:hidden text-white' size={25}/>
               <img 
                   className='w-8 h-8 object-cover rounded-full mr-2' 
                   src={currentChat.friend.profile_pic} 
@@ -109,7 +87,7 @@ const ChatWindow = ({socket, isConnected, currentChat}) => {
             <ProfileMenu/>
           </div>
           {/* <div className='divider m-0'/> */}
-          <div className='overflow-auto flex-1 px-2 pb-2'>
+          <div className='overflow-auto flex-1 px-2 pb-2 py-3'>
             {
               messages.map(message =>
                 <ChatMessageBox 
@@ -120,13 +98,13 @@ const ChatWindow = ({socket, isConnected, currentChat}) => {
             }
             <div ref={messagesEndRef} /> 
           </div>
-          <div>
+          <div className='flex-0 pb-16 md:p-0'>
             <form onSubmit={sendMessage} className='flex items-center rounded-lg p-2 pt-0 gap-2'>
-                <input id = 'send_message' ref={typingBoxRef} value={message} onChange={(e)=>setMessage(prev => e.target.value)} className='flex-1 input h-10 input-bordered' placeholder='Type a message'/>
+                <input id = 'send_message' ref={typingBoxRef} value={message} onChange={(e)=>setMessage(prev => e.target.value)} className='flex-1 p-3 bg-transparent border border-pink-600 rounded-lg outline-none focus:ring-pink-600 focus:ring-2 focus:border-pink-600' placeholder='Type a message'/>
                 {
                   message &&
                   <button type='submit'>
-                    <IoMdSend className='mx-3 text-cyan-400 cp' size={25}/>
+                    <IoMdSend className='mx-3 text-main cp' size={25}/>
                   </button>
                 }
             </form>
@@ -141,20 +119,19 @@ export default ChatWindow
 const ChatMessageBox = ({
   message, 
  }) => {
+
   
   
   return (
       <div className={`chat ${!message.is_self_message ? 'chat-start' : 'chat-end'}`}>
           <div className="chat-image avatar">
             <div className="w-10 rounded-full">
-              <img alt="user" src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+              <img alt="user" src={message?.profile_pic} />
             </div>
           </div>
-          <div className="chat-header">
-            <time className="text-xs opacity-50 mx-2">{message.created_at}</time>
-          </div>
-          <div className="chat-footer opacity-50">
-            {message?.is_self_message && message.status}
+          <div className={`chat-bubble ${!message.is_self_message ? 'bg-gray-200 text-gray-800' : 'bg-main text-white'}`}>{message.message}</div>
+          <div className="chat-footer opacity-80 text-gray-700">
+            <time className="text-xs opacity-80 mx-2 ">{message.created_at}</time>
           </div>
       </div>
   )
