@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Logo from '../../Components/Logo';
 import apiCall from '../../Functions/Axios';
+import { GiGraspingClaws } from "react-icons/gi";
 import { storeData } from '../../Functions/LocalStorage';
 
 const Register = () => {
